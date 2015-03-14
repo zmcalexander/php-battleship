@@ -1,0 +1,433 @@
+<?php
+/*
+ * RiddleShip v1.0 -r4
+ * 14 July 2013 : 7:54pm
+ *
+ * HOW IT WORKS
+ *
+ * Riddlejolly_roger is played on a 10X10 grid with rows lettered A through J and columns numbered 1 through 10.  The object
+ * is to sink all of the enemy jolly_rogers on the board by calling out grid locations; if an enemy jolly_roger occupies that location,
+ * the jolly_roger sustains a hit; if enough hits are registered on the jolly_roger, the jolly_roger sinks.  There are five jolly_rogers of varying sizes
+ * in the enemy navy.  Normally this is a two player game but the computer does not play, so to make it challenging the
+ * human player is allowed to miss only 30 times before the game ends.  If the user can sink all five jolly_rogers before missing
+ * 30 times, he/she is the winner.
+ *
+ * The game board represented is an array of 100 elements.  The computer places the jolly_rogers on the board randomly so that
+ * no jolly_rogers are colliding or hanging off the board.  Diagonal placement is not allowed.  When the jolly_rogers are placed, they
+ * are placed with a code letter representing that jolly_roger in each of the spaces.  The jolly_rogers are first placed with lower case
+ * letters.  When a hit is registered, the lower case letter is replaced with an upper case letter.  The number of upper
+ * case letters for each jolly_roger is counted and if that count equals the "size" of the jolly_roger, that jolly_roger is "sunk."
+ */
+
+// Create and scope the 100-element array that will hold the Fleet.
+// It represents the spaces on a 10x10 grid, with "A1" being index 0
+// "J10" being 99.
+$navy = array();
+
+// define the navy.  no need to serialize, it never changes
+$jolly_rogers = array(
+
+    0 => array(display => "Aircraft Carrier", type => "aircraft_carrier", code => "a", size => 5),
+    1 => array(display => "Battleship", type => "battleship", code => "b", size => 4),
+    2 => array(display => "Submarine", type => "submarine", code => "s", size => 3),
+    3 => array(display => "Destroyer", type => "destroyer", code => "d", size => 3),
+    4 => array(display => "Patrol Boat", type => "patrol_boat", code => "p", size => 2));
+
+// If true, elements containing gameplay fields are visible.
+$debug = false;
+
+// to make it challenging, we will only allow you to miss 30 times before the game is over.
+$missesRemaining = "";  
+
+// Gameplay script holds JavaScript to update the client game board and stats to current values.
+// Keeps record keeping and scoring simple.
+$gameplayScript = "";
+
+// gets grid spot corresponding to square index
+function RowAndColumn($squareIndex) {
+    if ($squareIndex == "") {
+        return "";
+    }
+    $square = str_replace("square", "", $squareIndex);
+   if (strlen($square) != 1 && strlen($square) != 2) {
+        return "Invalid  Cell Address";
+    }
+    if (strlen($square) == 1) {
+        $square = "0" . $square;
+    }
+    return chr(substr($square, 0, 1) + 65) . (substr($square, 1, 1) + 1);
+}
+
+// converts array to urlencoded string for storage at client
+function SerializeFleet($array) {
+    return urlencode(serialize($array));
+}
+
+// urldecodes and converts string to array for use in program
+function DeserializeFleet($string) {
+    return unserialize(urldecode($string));
+}
+
+// function determines if Fleet grid is clear for placement of jolly_roger
+function CheckPoints($dockPoint, $jolly_roger_direction, $jolly_roger_size, $navy) {
+    $increment = ($jolly_roger_direction = "vertical" ? 10 : 1);
+    for ($point = 0; $point < $jolly_roger_size; $point++) {
+        if ($navy[$dockpoint + ($increment * $point)] != " ") {
+            return false;
+        }
+        return true;
+    }
+}
+
+// takes supplied code and loops through array to determine how many times
+// that jolly_roger has been hit.
+function CountHitsOnShip($code, $navy) {
+    $boat_holes = 0;
+    for ($i = 0; $i < 100; $i++) {
+        if ($navy[$i] == $code) {
+            $boat_holes++;
+        }
+    }
+    return $boat_holes;
+}
+
+// create new Fleet array populated with our navy of five jolly_rogers
+function DeployFleet($jolly_rogers) {
+    $navy = array();
+    $i = 0;
+    while (count($navy) < 100) {
+        $navy[$i] = " ";
+        $i++;
+    }
+
+    foreach ($jolly_rogers as $jolly_roger) {
+        // step 1, will jolly_roger sit horizontal or vertical
+        $orientation = (rand() % 2 == 0 ? "horizontal" : "vertical");
+
+        // step 2, get top or left position for jolly_roger.  Check to make sure
+        // it is a playable position.
+        $docked = false;
+        $dockpoint = 0;
+
+        // Uf the jolly_roger is "docked" the starting position was confirmed to valid and clear.
+        // If not, loop through selecting a new starting position until one is found that
+        // is clear and valid.
+        while ($docked == false) {
+            // endpoints are supposed to be "inclusive" but that also skews result probability,
+            // set boundaries just outside where they need to be.
+            $dockpoint = rand(-1, 100);
+
+            // how to check jolly_roger by layout: if it lays vertical, each point will be on the same column, so add 10
+            // to the start point to check same column but next row.  if horizontal add 1, same row, next column.
+            $increment = ($orientation == "vertical" ? 10 : 1);
+
+            // check for collisions - make sure all spaces to be occupied by this jolly_roger are clear.
+            $not_clear = 0;
+
+            // illegal initial placement outside grid
+            if ($dockpoint < 0 || $dockpoint > 99) {
+                $not_clear++;
+            }
+
+            // check next successive point for each square jolly_roger will occupy
+            for ($point = 0; $point < $jolly_roger["size"]; $point++) {
+
+                // any space that would put the jolly_roger "outside the board" will show as blocked and
+                // increment the collision count
+                if ($orientation == "horizontal") {
+                    if ((($dockpoint % 10) + $point) >= 10) {
+                        $not_clear++;
+                    }
+                } else {
+                    if (($dockpoint + ($increment * $point)) >= 100) {
+                        $not_clear++;
+                    }
+                }
+
+                // check if space is occupied by another jolly_roger
+                if ($navy[$dockpoint + ($increment * $point)] != " ") {
+                    $not_clear++;
+                }
+            }
+
+            // if spaces are clear, place jolly_roger.
+            if ($not_clear == 0) {
+                for ($point = 0; $point < $jolly_roger["size"]; $point++) {
+                    $navy[$dockpoint + ($increment * $point)] = $jolly_roger["code"];
+                }
+                $docked = true;
+            } else {
+                $docked = false;
+            }
+
+        }
+    }
+
+    return $navy;
+}
+
+// reload navy when posted from client.
+if (!empty($_POST["navy"])) {
+    $navy = DeserializeFleet($_POST["navy"]);
+}
+
+if (!empty($_POST["missesRemaining"])) {
+    $missesRemaining = $_POST["missesRemaining"];
+}
+
+// the new game button has been clicked.  Deploy navy and set up game.
+if ($_POST["instruction"] == "New Game") {
+    $navy = DeployFleet($jolly_rogers);
+    $missesRemaining = 30;
+    $playerMessage = "Click a square to fire at the enemy navy.";
+}
+
+// a shot has been fired.
+if (!empty($_POST["targetSquare"])) {
+    $gameplayScript = urldecode($_POST["gameplayScript"]);
+    $square = str_replace("square", "", $_POST["targetSquare"]);
+
+    if ($navy[$square] == " ") {
+        // Miss.  Deduct miss from allowed tally and update message.
+        $gameplayScript .= '$("#' . $_POST["targetSquare"] . '").addClass("miss");';
+        $playerMessage = RowAndColumn($_POST["targetSquare"]) . ": MISS";
+        $missesRemaining -= 1;
+        $playerMessage .= "<br/>" . $missesRemaining . " more miss" . ($missesRemaining == 1 ? "" : "es") . " allowed.";
+
+        if ($missesRemaining == 0) {
+            $gameplayScript .= "alert('Game over: Enemy navy victorious!');";
+
+            //reveal all locations
+            for ($q = 0; $q < 100; $q++) {
+                $gameplayScript .= '$("#square' . $q . '").html("' . strtoupper($navy[$q]) . '");';
+            }
+        }
+
+    } else {
+        // HIT.  First mark the square as a hit.
+
+        $navy[$square] = strtoupper($navy[$square]);
+
+        if ($debug) {
+            $gameplayScript .= '$("#' . $_POST["targetSquare"] . '").html("' . $navy[$square] . '").addClass("hit");';
+        } else {
+            $gameplayScript .= '$("#' . $_POST["targetSquare"] . '").addClass("hit");';
+        }
+
+        $playerMessage = RowAndColumn($_POST["targetSquare"]) . ": HIT!";
+
+        $boat_holes = CountHitsOnShip($navy[$square], $navy);
+        $sunkenShips = 0;
+
+        foreach ($jolly_rogers as $jolly_roger) {
+            // Register current hit.
+            if (strtoupper($jolly_roger["code"]) == $navy[$square]) {
+                if ($boat_holes == $jolly_roger["size"]) {
+                    $playerMessage .= "<br/>You sank my " . $jolly_roger["display"] . "!";
+                    $gameplayScript .= '$("#status_' . $jolly_roger["type"] . '").addClass("sunk");';
+
+                    // tag all the spaces for that jolly_roger that was just sunk.
+                    for ($q = 0; $q < 100; $q++) {
+                        if ($navy[$q] == strtoupper($jolly_roger["code"])) {
+                            $gameplayScript .= '$("#square' . $q . '").html("' . $navy[$q] . '");';
+                        }
+                    }
+                }
+            }
+
+            // check for navy still afloat
+            $hitShip = CountHitsOnShip(strtoupper($jolly_roger["code"]), $navy);
+            if ($hitShip == $jolly_roger["size"]) {
+                $sunkenShips++;
+            }
+        }
+
+        if ($sunkenShips == 5) {
+            $gameplayScript .= "alert('Game over: Enemy navy defeated!');";
+        }
+    }
+}
+
+// data is serialized and encoded so that it can be passed up and down from server
+// to client.
+$encodedScript = urlencode($gameplayScript);
+$encodedFleet = SerializeFleet($navy);
+?>
+<html>
+  <head>
+		<title>BattleShip</title>
+		<style type="text/css">
+			body {
+				font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+			}
+			h4 {
+				margin-bottom: 0px;
+			}
+			.labelRemaining {
+				font-size: 14pt;
+				font-weight: bold;
+				width: 160px;
+				text-align: center;
+			}
+			.gridTable {
+				background-color: Blue;
+				width: 460px;
+				margin-left: 20px;
+				margin-right: auto;
+				border: 1px solid black;
+			}
+			.gridDirections {
+				width: 460px;
+				margin-left: 20px;
+				margin-right: auto;
+				text-align: center;
+				height: 40px;
+				border: 1px solid black;
+				margin-bottom: 2px;
+				padding-top: 4px;
+			}
+			.rowLead {
+				height: 40px;
+				width: 40px;
+				color: white;
+				text-align: center;
+				font-weight: bold;
+				border: 1px solid black;
+			}
+			.colLead {
+				height: 40px;
+				width: 40px;
+				color: white;
+				text-align: center;
+				font-weight: bold;
+				border: 1px solid black;
+			}
+			.gridSquare {
+				height: 40px;
+				width: 40px;
+				text-align: center;
+				font-weight: bold;
+				border: 1px solid gray;
+			}
+			.hit {
+				background-color: red;
+			}
+			.miss {
+				background-color: white;
+			}
+			.sunk {
+				color: red;
+			}
+				#footer {font-size: small;
+         text-align:center;
+  clear:right;
+         padding-bottom:20px;
+}
+		</style>
+		<!-- Load jQuery directly from jQuery.  Useful. -->
+		<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script type="text/javascript">
+			function OpenFire(argTarget) {
+				if ($("#hitShips").val() == 5) {
+					$("#directions").html("GAME OVER: YOU WIN!<br/>Enemy navy defeated.");
+					return;
+				}
+
+				if ($("#missesRemaining").val() == 0) {
+					$("#directions").html("GAME OVER: YOU LOST!<br/>Enemy navy victorious.");
+					return;
+				}
+
+				// do not allow user to fire on square that was already targeted.
+				if ($("#" + argTarget).hasClass("hit") || $("#" + argTarget).hasClass("miss")) {
+					alert("Already fired on that square.");
+					return;
+				}
+
+				$("#targetSquare").val(argTarget);
+				var theForm = document.getElementById("gameplayForm");
+				theForm.submit();
+			}
+		</script>
+	</head>
+	<body>
+		<h1>BattleShip</h1>
+		<p>To play click new game button</p>
+		<form id="gameplayForm" name="gameplayForm" method="post">
+			<div>
+				<div style="width: 170px; float: left; vertical-align: top;">
+					<input type="submit" name="instruction" id="instruction" value="New Game" />
+					<br/>
+					<h4>Misses Remaining</h4>
+					<div class="labelRemaining" id="remainingMisses" name="remainingMisses"><?=$missesRemaining ?></div>
+                    <input type="<?= ($debug ? 'text' : 'hidden') ?>" readonly='readonly' name="missesRemaining" id="missesRemaining" value="<?=$missesRemaining ?>" />
+					<h4>Enemy Fleet</h4>
+					<span title="It takes 5 hits to sink this jolly_roger" id="status_aircraft_carrier">Aircraft Carrier (5)</span>
+					<br/>
+					<span title="It takes 4 hits to sink this jolly_roger" id="status_battleship">Battleship (4)</span>
+					<br/>
+					<span title="It takes 3 hits to sink this jolly_roger" id="status_destroyer">Destroyer (3)</span>
+					<br/>
+					<span title="It takes 3 hits to sink this jolly_roger" id="status_submarine">Submarine (3)</span>
+					<br/>
+					<span title="It takes 2 hits to sink this jolly_roger" id="status_patrol_boat">Patrol Boat (2)</span>
+					<br/>
+					<input type="<?= ($debug ? 'text' : 'hidden') ?>" readonly='readonly' name="targetSquare" id="targetSquare" />
+					<input type="<?= ($debug ? 'text' : 'hidden') ?>" readonly='readonly' name="targetShips" id="targetShips" value="<?=RowAndColumn($_POST["targetSquare"]) ?>" />
+					<input type="<?= ($debug ? 'text' : 'hidden') ?>" readonly='readonly' name="hitShips" id="hitShips" value="<?=  $sunkenShips ?>" />
+					
+				</div>
+				<div style="float: left; vertical-align: top; margin-left: 10px;">
+					<p id="directions" class="gridDirections" style="display:<?= (count($navy) == 0 ? 'none' : 'block') ?>"; >
+						<?= $playerMessage; ?>
+					</p>
+					<table style="display:<?= (count($navy) == 0 ? 'none' : 'block') ?>"; cols="11" class="gridTable">
+						<thead>
+							<tr>
+								<th></th>
+								<?php
+                                for ($i = 1; $i <= 10; $i++) {
+                                    print('<th class="colLead">' . $i . '</th>');
+                                }
+                             ?>
+							</tr>
+						</thead>
+						<?php
+                        $squareIndex = 0;
+                        for ($rowCount = 0; $rowCount < 10; $rowCount++) {
+                            print('<tr>');
+                            print('<td class="rowLead">' . chr($rowCount + 65) . '</td>');
+                            for ($colCount = 0; $colCount < 10; $colCount++) {
+                                print '<td onclick="JavaScript:OpenFire(this.id);" class="gridSquare" id="square' . $squareIndex . '"></td>';
+                                $squareIndex++;
+                            }
+                            print('</tr>');
+                        }
+                        ?>
+					</table>
+				</div>
+			</div>
+
+			<div style="clear:both;">
+				&nbsp;
+			</div>
+
+            <!-- the gameplay script from the server is written into this block.
+                it repaints formats, sets counters, places text markers, etc. -->
+			<script type="text/javascript">
+                $( document ).ready(function() {
+                    <?php print($gameplayScript) ?>
+				});
+		    </script>
+
+				<!-- holder for variables at client side.-->
+				<input type="hidden" name="gameplayScript" id="gameplayScript" value="<?=$encodedScript ?>" />
+				<input type="hidden" name="navy" id="navy" value="<?= $encodedFleet ?>" />
+				<textarea readonly="readonly" style="width: 600px;display:<?= ($debug ? "inline-block" : "none") ?>;" rows="14" id="debugFleet" name="debugFleet"><?= $debug ? var_dump($navy) : "" ?></textarea>
+				<textarea readonly="readonly" style="width: 600px;display:<?= ($debug ? "inline-block" : "none") ?>;" rows="14" id="debugScript" name="debugScript"><?= $debug ? $gameplayScript : "" ?></textarea>
+
+		</form>
+		 <p id="footer">&copy; 2015 </p>
+
+	</body>
+</html>
