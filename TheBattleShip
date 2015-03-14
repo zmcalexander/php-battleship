@@ -1,0 +1,134 @@
+<?php
+session_start();
+?>
+<html>
+<head>
+<title> Hello! </title>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+<meta name='txtweb-appkey' content ='1205be63-8293-4c02-82ce-17c500075e80' />
+</head>
+<body>
+<?php
+if(!empty($_GET['user'])){
+    $user=$_GET['user'];
+    if($user=='x'||$user=='X'){$com='O';}
+    if($user=='o'||$user=='O'||$user=='0'){$user='O';$com='X';}
+    $user=strtoupper($user);
+    echo 'U choose to play with ',$user;
+    if(empty($_GET['move'])){
+        echo '<br />Take ur keypad as grid & start playing by replying with grid number<br />E.g.: 4 for 2 row 1 column<br />';
+    }
+    $grid=array();
+    $grid[0]=array('   ','   ','   ');
+    $grid[1]=array('   ','   ','   ');
+    $grid[2]=array('   ','   ','   ');
+    if(!empty($_GET['move'])){
+        $usermove=$_GET['move'];
+        $s=$_SESSION['usermove'];
+        $pos=strpos($usermove,$s);
+        if(!($pos===false)){echo 'This position is not empty!!';exit();}
+        $s=$_SESSION['commove'];
+        $pos=strpos($usermove,$s);
+        if(!($pos===false)){echo 'This position is not empty!!';exit();}
+        if(!empty($_SESSION['usermove'])){$_SESSION['usermove']=$_SESSION['usermove'].','.$usermove;}
+        else{$_SESSION['usermove']=$usermove;}
+        $moves=explode(',',$_SESSION['usermove']);
+        foreach($moves as $value){
+            switch($value){
+                case '1':$grid[0][0]=' '.$user.' ';
+                    break;
+                case '2':$grid[0][1]=' '.$user.' ';
+                    break;
+                case '3':$grid[0][2]=' '.$user.' ';
+                    break;
+                case '4':$grid[1][0]=' '.$user.' ';
+                    break;
+                case '5':$grid[1][1]=' '.$user.' ';
+                    break;
+                case '6':$grid[1][2]=' '.$user.' ';
+                    break;
+                case '7':$grid[2][0]=' '.$user.' ';
+                    break;
+                case '8':$grid[2][1]=' '.$user.' ';
+                    break;
+                case '9':$grid[2][2]=' '.$user.' ';
+                    break;
+            }
+        }
+        if(strlen($moves)==1){
+            $ran=rand(2,9);
+            if($ran==$moves[0]){
+                $ran=$ran-1;
+            }
+        }
+        else{
+            $ran=rand(1,9);
+            $i=0;
+            while(in_array($ran,$_SESSION['usermove'])){
+                $ran=rand(1,9);
+                $i++;
+                if($i>=9){$ran=12;break;}
+            }
+        }
+        if(!empty($_SESSION['commove'])){$_SESSION['commove']=$_SESSION['commove'].','.$ran;}
+        else{$_SESSION['commove']=$ran;}
+        $cmoves=explode(',',$_SESSION['commove']);
+        foreach($cmoves as $value){
+            switch($value){
+                case '1':$grid[0][0]=' '.$com.' ';
+                    break;
+                case '2':$grid[0][1]=' '.$com.' ';
+                    break;
+                case '3':$grid[0][2]=' '.$com.' ';
+                    break;
+                case '4':$grid[1][0]=' '.$com.' ';
+                    break;
+                case '5':$grid[1][1]=' '.$com.' ';
+                    break;
+                case '6':$grid[1][2]=' '.$com.' ';
+                    break;
+                case '7':$grid[2][0]=' '.$com.' ';
+                    break;
+                case '8':$grid[2][1]=' '.$com.' ';
+                    break;
+                case '9':$grid[2][2]=' '.$com.' ';
+                    break;
+            }
+        }
+    }
+    echo '<br /><pre>';
+    echo '|',$grid[0][0],'|',$grid[0][1],'|',$grid[0][2],'<br />';
+    echo '|---|---|---|---|---|---|---|---|---|---|<br />';
+    echo '|',$grid[1][0],'|',$grid[1][1],'|',$grid[1][2],'<br/>';
+    echo '|---|---|---|---|---|---|---|---|---|---|<br />';
+    echo '|',$grid[2][0],'|',$grid[2][1],'|',$grid[2][2],'<br />';
+  	echo '|---|---|---|---|---|---|---|---|---|---|<br />';
+  	echo '|',$grid[0][0],'|',$grid[0][1],'|',$grid[0][2],'<br />';
+    echo '|---|---|---|---|---|---|---|---|---|---|<br />';
+    echo '|',$grid[1][0],'|',$grid[1][1],'|',$grid[1][2],'<br/>';
+    echo '|---|---|---|---|---|---|---|---|---|---|<br />';
+  	echo '|',$grid[1][0],'|',$grid[1][1],'|',$grid[1][2],'<br/>';
+    echo '|---|---|---|---|---|---|---|---|---|---|<br />';
+    echo '|',$grid[2][0],'|',$grid[2][1],'|',$grid[2][2],'<br />';
+  	echo '|---|---|---|---|---|---|---|---|---|---|<br />';
+  	echo '|',$grid[0][0],'|',$grid[0][1],'|',$grid[0][2],'<br />';
+    echo '|---|---|---|---|---|---|---|---|---|---|<br />';
+    echo '|',$grid[1][0],'|',$grid[1][1],'|',$grid[1][2],'|',$grid[1][1],'|',$grid[1][2],'|',$grid[1][1],'|',$grid[1][2],'|',$grid[1][1],'|',$grid[1][2],'|',$grid[1][2],'<br/>';
+    echo '|---|---|---|---|---|---|---|---|---|---|<br />';
+    echo '|',$grid[2][0],'|',$grid[2][1],'|',$grid[2][2],'</pre><br />';
+    echo '<form action="',$_SERVER['PHP_SELF'],'" method="get" class="txtweb-form">';
+    echo 'Your option<input type="text" name="move" />';
+    echo '<input type="hidden" name="user" value="',$user,'" />';
+    echo '<input type="submit" value="send" /></form>';
+    echo '</body></html>';
+    exit();
+}
+$_SESSION['usermove']='';
+$_SESSION['commove']='';
+echo 'Wellcome, choose X or O<br/>';
+echo '<form action="'.$_SERVER['PHP_SELF'].'" method="get" class="txtweb-form">';
+echo 'X or O<input type="text" name="user" />';
+echo '<input type="submit" value="choose" /></form>';
+?>
+</body>
+</html>
