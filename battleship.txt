@@ -1,0 +1,19 @@
+
+   a b c d e f g h i j
+1  O O O O O O O O O O
+2  O O O O O O O O O O
+3  O O O O O O O O O O
+4  O O O O O O O O O O
+5  O O O O O O O O O O
+6  O O O O O O O O O O
+7  O O O O O O O O O O
+8  O O O O O O O O O O
+9  O O O O O O O O O O
+10 O O O O O O O O O O
+
+Enter your target (example: A1)
+
+Textbox: a1
+
+every time the player submits, the program calls itself refreshing and reprinting the array
+
