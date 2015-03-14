@@ -1,0 +1,110 @@
+
+
+// Create and scope the 100-element array that will hold the Fleet.
+// It represents the spaces on a 10x10 grid, with "A1" being index 0
+// "J10" being 99.
+
+// fleet is the grid aka the ocean
+
+
+// define the navy.  no need to serialize, it never changes
+
+
+// If true, elements containing gameplay fields are visible.
+
+
+// to make it challenging, we will only allow you to miss 30 times before the game is over.
+
+
+// Gameplay script holds JavaScript to update the client game board and stats to current values.
+// Keeps record keeping and scoring simple.
+
+
+// gets grid spot corresponding to cell index
+
+
+// converts array to urlencoded string for storage at client
+
+// urldecodes and converts string to array for use in program
+
+
+// function determines if Fleet grid is clear for placement of ship
+
+
+// takes supplied code and loops through array to determine how many times 
+// that ship has been hit.
+
+
+// create new Fleet array populated with our fleet of five ships
+
+        // step 1, will ship sit horizontal or vertical
+        
+
+        // step 2, get top or left position for ship.  Check to make sure
+        // it is a playable position.
+      
+
+        // Uf the ship is "anchored" the starting position was confirmed to valid and clear.
+        // If not, loop through selecting a new starting position until one is found that
+        // is clear and valid.
+     
+            // endpoints are supposed to be "inclusive" but that also skews result probability,
+            // set boundaries just outside where they need to be.
+           
+
+            // how to check ship by layout: if it lays vertical, each point will be on the same column, so add 10
+            // to the start point to check same column but next row.  if horizontal add 1, same row, next column.
+           
+
+            // check for collisions - make sure all spaces to be occupied by this ship are clear.
+           
+
+            // illegal initial placement outside grid
+        
+
+            // check next successive point for each square ship will occupy
+          
+
+                // any space that would put the ship "outside the board" will show as blocked and
+                // increment the collision count
+                
+
+                // check if space is occupied by another ship
+
+
+            // if spaces are clear, place ship.
+
+
+// reload fleet when posted from client.
+
+// the new game button has been clicked.  Deploy fleet and set up game.
+
+
+// a shot has been fired.
+
+        // HIT.  First mark the square as a hit.
+
+            // Register current hit.
+
+
+            // check for fleet still afloat
+
+
+// data is serialized and encoded so that it can be passed up and down from server
+// to client.
+
+
+				// do not allow user to fire on square that was already targeted.
+
+ 
+ 				 Battleship<br> is played on a 10X10 grid with rows lettered A through J and columns numbered 1 through 10.  The object <br>
+  				 is to sink all of the enemy ships on the board by calling out grid locations; if an enemy ship occupies that location,<br>
+  				the ship sustains a hit; if enough hits are registered on the ship, the ship sinks.  There are five ships of varying sizes<br>
+  				in the enemy fleet.  Normally this is a two player game but the computer does not play, so to make it challenging the<br>
+  				human player is allowed to miss only 30 times before the game ends.  If the user can sink all five ships before missing<br>
+  				30 times, he/she is the winner. The game board represented is an array of 100 elements. <br>
+  				 The computer places the ships on the board randomly so that<br>
+  				no ships are colliding or hanging off the board.  Diagonal placement is not allowed.  When the ships are placed, they<br>
+  			are placed with a code letter representing that ship in each of the spaces.  The ships are first placed with lower case<br>
+  			letters.  When a hit is registered, the lower case letter is replaced with an upper case letter.  The number of upper<br>
+  			case letters for each ship is counted and if that count equals the "size" of the ship, that ship is sunk.</p>
