@@ -46,16 +46,21 @@ $cruiserHits = 0;
 
 // method to receive move from user and process move against the board
 function processMove() {
+
+// bring in the variables
+    global $carrierPosition, $battleshipPosition, $destroyerPosition, $submarinePosition, $cruiserPosition;
+    global $carrierHits, $battleshipHits, $destroyerHits, $submarineHits, $cruiserHits;
+
 if(!empty($_GET['move'])) {
 	$move = $_GET['move'];
-	echo "Your current move: " . $move;
+	echo "Your current move: " . $move . "<br><br>";
 	$missed = false;
 	
 	
 	for ($i = 0; $i < sizeof($carrierPosition); $i++) {
 		if ($move == $carrierPosition[$i]) {
 			$carrierHits++;
-			echo " You hit the Carrier!";
+			echo " <br><br>You hit the Carrier!";
 		} else {
 			$missed == true;
 		}
@@ -63,7 +68,7 @@ if(!empty($_GET['move'])) {
 	for ($i = 0; $i < sizeof($battleshipPosition); $i++) {
 		if ($move == $battleshipPosition[$i]) {
 			$battleshipHits++;
-			echo " You hit the Battleship!";
+			echo " <br><br>You hit the Battleship!";
 		}  else {
 			$missed == true;
 		}
@@ -71,7 +76,7 @@ if(!empty($_GET['move'])) {
 	for ($i = 0; $i < sizeof($destroyerPosition); $i++) {
 		if ($move == $destroyerPosition[$i]) {
 			$destroyerHits++;
-			echo " You hit the Destroyer!";
+			echo " <br><br>You hit the Destroyer!";
 		}  else {
 			$missed == true;
 		}
@@ -79,46 +84,58 @@ if(!empty($_GET['move'])) {
 	for ($i = 0; $i < sizeof($submarinePosition); $i++) {
 		if ($move == $submarinePosition[$i]) {
 			$submarineHits++;
-			echo "You hit the Submarine!";
+			echo " <br><br>You hit the Submarine!";
 		}  else {
 			$missed == true;
 		}
 	}
 	for ($i = 0; $i < sizeof($cruiserPosition); $i++) {
 		if ($move == $cruiserPosition[$i]) {
-			$submarineHits++;
-			echo " You hit the Cruiser!";
+			$cruiserHits++;
+			echo " <br><br>You hit the Cruiser!";
 		}  else {
-			$missed == true;
+		  $missed == true;
 		}
 	}
 }
 }
 
 // method to evaluate move after processMove method. This method displays messages to user about whether they hit or missed.
-function evaluateMove() {	
-if  ($missed == true) {
-	echo "You missed!";
-} else if ($carrierHits == 5) {
-	echo "You sunk the Carrier!";
-} else if ($battleshipHits == 4) {
-	echo "You sunk the Battleship!";
-} else if ($destroyerHits == 2) {
-	echo "You sunk the Destroyer!";
+function evaluateMove() {
+    // bring in the variables
+    global $carrierHits, $battleshipHits, $destroyerHits, $submarineHits, $cruiserHits, $missed;
+
+if ($missed == true) {
+	echo " <br><br>You missed!";
 }
-	echo "You sunk the Destroyer!";
-} else if ($submarineHits == 3) {
-	echo "You sunk the Submarine!";
-} else if ($cruiserHits == 3) {
-	echo "You sunk the Cruiser!;
+
+if ($carrierHits == 5) {
+	echo " <br><br>You sunk the Carrier!";
 }
-} // end evaluateMove
+
+if ($battleshipHits == 4) {
+	echo " <br><br>You sunk the Battleship!";
+} 
+
+if ($destroyerHits == 2) {
+	echo " <br><br>You sunk the Destroyer!";
+}
+
+if ($submarineHits == 3) {
+	echo " <br><br>You sunk the Submarine!";
+} 
+
+if ($cruiserHits == 3) {
+	echo " <br><br>You sunk the Cruiser!";
+}
+}// end evaluateMove
+
 
 // call methods
 processMove();
 evaluateMove();
 	
-	
+/*	
 if(!empty($_GET['user'])){
     $user=$_GET['user'];
     if($user=='x'||$user=='X'){$com='O';}
@@ -208,8 +225,8 @@ if(!empty($_GET['user'])){
         }
     }
 
-	
-	echo 'Begin by entering the grid number of the desired target.';
+	*/
+	echo '<br><br>Begin by entering the grid number of the desired target.';
     echo '<form action="',$_SERVER['PHP_SELF'],'" method="get" class="txtweb-form">';
     echo '(E.g.: B2 for 2nd row - 2nd column)<input type="text" name="move" />';
     echo '<input type="hidden" name="user" value="',$user,'" />';
@@ -243,7 +260,7 @@ if(!empty($_GET['user'])){
        echo '<form action="',$_SERVER['PHP_SELF'],'" method="get" class="txtweb-form">';
        echo '</body></html>';
     exit();
-}
+
 $_SESSION['usermove']='';
 $_SESSION['commove']='';
 echo '<h1>Welcome to BATTLESHIP</h1><br/>';
