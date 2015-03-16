@@ -49,29 +49,30 @@ $missed = false;
 function searchTheArrays() {
 // bring in the arrays
 global $row1, $row2, $row3, $row4, $row5, $row6, $row7, $row8, $row9, $row10;
-
+	$move = $_GET["move"];
 	for ($j = 0; $j < 10; $j++) {
-		if ($_GET["move"] == $row1[$j][1]) {
+		if ($move == $row1[$j][1]):
 		$row1[$j][0] = " X ";
-		} else if($_GET["move"] == $row2[$j][1]) {
+		elseif($move == $row2[$j][1]):
 		$row2[$j][0] = " X ";
-		} else if($_GET["move"] == $row3[$j][1]) {
+		elseif($move == $row3[$j][1]):
 		$row3[$j][0] = " X ";
-		} else if($_GET["move"] == $row4[$j][1]) {
+		elseif($move == $row4[$j][1]):
 		$row4[$j][0] = " X ";
-		} else if($_GET["move"] == $row5[$j][1]) {
+		elseif($move == $row5[$j][1]):
 		$row5[$j][0] = " X ";
-		} else if($_GET["move"] == $row6[$j][1]) {
+		elseif($move == $row6[$j][1]):
 		$row6[$j][0] = " X ";
-		} else if($_GET["move"] == $row7[$j][1]) {
+		elseif($move == $row7[$j][1]):
 		$row7[$j][0] = " X ";
-		} else if($_GET["move"] == $row8[$j][1]) {
+		elseif($move == $row8[$j][1]):
 		$row8[$j][0] = " X ";
-		} else if($_GET["move"] == $row9[$j][1]) {
+		elseif($move == $row9[$j][1]):
 		$row9[$j][0] = " X ";
-		} else if($_GET["move"] == $row10[$j][1]) {
+		elseif($move == $row10[$j][1]):
 		$row10[$j][0] = " X ";
-		}
+		else:
+		endif;
 		}
 }
 // retrieve hit counters from session
