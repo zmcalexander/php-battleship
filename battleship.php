@@ -3,14 +3,12 @@ session_start();
 ?>
 <html>
 <head>
-<title>Battle Ship</title>
+<title>Battleship</title>
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 <meta name='txtweb-appkey' content ='1205be63-8293-4c02-82ce-17c500075e80' />
 </head>
 <body>
 <?php
-
-
 	
 // build the column arrays
 $row1 = array(array(" O ", " A1"), array(" O ", " A2"), array(" O ", " A3"), array(" O ", " A4"), array(" O ", " A5"), array(" O ", " A6"), array(" O ", " A7"), array(" O ", " A8"), array(" O ", " A9"), array(" O ", "A10")); 
@@ -24,42 +22,140 @@ $row8 = array(array(" O ", " H1"), array(" O ", " H2"), array(" O ", " H3"), arr
 $row9 = array(array(" O ", " I1"), array(" O ", " I2"), array(" O ", " I3"), array(" O ", " I4"), array(" O ", " I5"), array(" O ", " I6"), array(" O ", " I7"), array(" O ", " I8"), array(" O ", " I9"), array(" O ", "I10")); 
 $row10 = array(array(" O ", " J1"), array(" O ", " J2"), array(" O ", " J3"), array(" O ", " J4"), array(" O ", " J5"), array(" O ", " J6"), array(" O ", " J7"), array(" O ", " J8"), array(" O ", " J9"), array(" O ", "J10")); 
 
-
+// declare number of spaces per ship
 $carrier = 5; 
 $battleship = 4; 
 $destroyer = 2; 
 $submarine = 3; 
 $cruiser = 3; 
 
-
+// assign board positions to ships
 $carrierPosition = array("C1", "C2", "C3", "C4", "C5");
 $battleshipPosition = array("G7", "G8", "G9", "G10");
 $destroyerPosition = array("I6", "J6");
 $submarinePosition = array("A10", "B10", "C10");
 $cruiserPosition = array("E3", "E4", "E5");
 
-$carrierHits = 0;
-$battleshipHits = 0;
-$destroyerHits = 0;
-$submarineHits = 0;
-$cruiserHits = 0;
+
+$missed = false;
+
+function in_array_r($needle, $haystack, $strict = true) {
+    foreach ($haystack as $item) {
+        if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && in_array_r($needle, $item, $strict))) {
+            return $needle;
+        }
+    }
+}
+
+
+
+function searchTheArrays() {
+// bring in the arrays
+global $row1, $row2, $row3, $row4, $row5, $row6, $row7, $row8, $row9, $row10;
+
+if (in_array_r($_GET["move"], $row1) != null) {
+	
+	
+}
+
+	for ($j = 0; $j < 10; $j++) {
+		if ($_GET["move"] == $row1[$j][1]) {
+		$row1[$j][0] = " X ";
+		break;
+		}
+		if($_GET["move"] == $row2[$j][1]) {
+		$row2[$j][0] = " X ";
+		break;
+		}
+		if($_GET["move"] == $row3[$j][1]) {
+		$row3[$j][0] = " X ";
+		break;
+		} 
+		if($_GET["move"] == $row4[$j][1]) {
+		$row4[$j][0] = " X ";
+		break;
+		} 
+		if($_GET["move"] == $row5[$j][1]) {
+		$row5[$j][0] = " X ";
+		break;
+		}
+		if($_GET["move"] == $row6[$j][1]) {
+		$row6[$j][0] = " X ";
+		break;
+		} 
+		if($_GET["move"] == $row7[$j][1]) {
+		$row7[$j][0] = " X ";
+		break;
+		} 
+		if($_GET["move"] == $row8[$j][1]) {
+		$row8[$j][0] = " X ";
+		break;
+		} 
+		if($_GET["move"] == $row9[$j][1]) {
+		$row9[$j][0] = " X ";
+		break;
+		} 
+		if($_GET["move"] == $row10[$j][1]) {
+		$row10[$j][0] = " X ";
+		break;
+		}
+		}
+}
+
+
+
+
+// retrieve hit counters from session
+function retrieveHitsFromSession() {
+	if (isset($_SESSION["carrierHits"])) {
+		$carrierHits = $_SESSION["carrierHits"];
+	} else {
+		$carrierHits = 0;
+	} // end if
+
+	if (isset($_SESSION["battleshipHits"])) {
+		$battleshipHits = $_SESSION["battleshipHits"];
+	} else {
+		$battleshipHits = 0;
+	} 
+	
+	if (isset($_SESSION["destroyerHits"])) {
+		$destroyerHits = $_SESSION["destroyerHits"];
+	} else {
+		$destroyerHits = 0;
+	} 
+	
+	if (isset($_SESSION["submarineHits"])) {
+		$submarineHits = $_SESSION["submarineHits"];
+	} else {
+		$submarineHits = 0;
+	} 
+	
+	if (isset($_SESSION["cruiserHits"])) {
+		$cruiserHits = $_SESSION["cruiserHits"];
+	} else {
+		$cruiserHits = 0;
+	} 
+}
+
+
+retrieveHitsFromSession();
+searchTheArrays();
 
 // method to receive move from user and process move against the board
 function processMove() {
-
 // bring in the variables
     global $carrierPosition, $battleshipPosition, $destroyerPosition, $submarinePosition, $cruiserPosition;
-    global $carrierHits, $battleshipHits, $destroyerHits, $submarineHits, $cruiserHits;
-
+    // global $carrierHits, $battleshipHits, $destroyerHits, $submarineHits, $cruiserHits;
 if(!empty($_GET['move'])) {
 	$move = $_GET['move'];
 	echo "Your current move: " . $move . "<br><br>";
-	$missed = false;
+	global $missed;
 	
 	
 	for ($i = 0; $i < sizeof($carrierPosition); $i++) {
 		if ($move == $carrierPosition[$i]) {
-			$carrierHits++;
+			$_SESSION["carrierHits"]++;
 			echo " <br><br>You hit the Carrier!";
 		} else {
 			$missed == true;
@@ -67,7 +163,7 @@ if(!empty($_GET['move'])) {
 	}
 	for ($i = 0; $i < sizeof($battleshipPosition); $i++) {
 		if ($move == $battleshipPosition[$i]) {
-			$battleshipHits++;
+			$_SESSION["battleshipHits"]++;
 			echo " <br><br>You hit the Battleship!";
 		}  else {
 			$missed == true;
@@ -75,7 +171,7 @@ if(!empty($_GET['move'])) {
 	}
 	for ($i = 0; $i < sizeof($destroyerPosition); $i++) {
 		if ($move == $destroyerPosition[$i]) {
-			$destroyerHits++;
+			$_SESSION["destroyerHits"]++;
 			echo " <br><br>You hit the Destroyer!";
 		}  else {
 			$missed == true;
@@ -83,7 +179,7 @@ if(!empty($_GET['move'])) {
 	}
 	for ($i = 0; $i < sizeof($submarinePosition); $i++) {
 		if ($move == $submarinePosition[$i]) {
-			$submarineHits++;
+			$_SESSION["submarineHits"]++;
 			echo " <br><br>You hit the Submarine!";
 		}  else {
 			$missed == true;
@@ -91,141 +187,45 @@ if(!empty($_GET['move'])) {
 	}
 	for ($i = 0; $i < sizeof($cruiserPosition); $i++) {
 		if ($move == $cruiserPosition[$i]) {
-			$cruiserHits++;
+			$_SESSION["cruiserHits"]++;
 			echo " <br><br>You hit the Cruiser!";
 		}  else {
 		  $missed == true;
 		}
 	}
 }
+
 }
+
 
 // method to evaluate move after processMove method. This method displays messages to user about whether they hit or missed.
 function evaluateMove() {
     // bring in the variables
     global $carrierHits, $battleshipHits, $destroyerHits, $submarineHits, $cruiserHits, $missed;
-
 if ($missed == true) {
 	echo " <br><br>You missed!";
 }
-
-if ($carrierHits == 5) {
+if ($_SESSION["carrierHits"] == 5) {
 	echo " <br><br>You sunk the Carrier!";
 }
-
-if ($battleshipHits == 4) {
+if ($_SESSION["battleshipHits"] == 4) {
 	echo " <br><br>You sunk the Battleship!";
 } 
-
-if ($destroyerHits == 2) {
+if ($_SESSION["destroyerHits"] == 2) {
 	echo " <br><br>You sunk the Destroyer!";
 }
-
-if ($submarineHits == 3) {
+if ($_SESSION["submarineHits"] == 3) {
 	echo " <br><br>You sunk the Submarine!";
 } 
-
-if ($cruiserHits == 3) {
+if ($_SESSION["cruiserHits"] == 3) {
 	echo " <br><br>You sunk the Cruiser!";
 }
 }// end evaluateMove
-
-
 // call methods
 processMove();
 evaluateMove();
-	
-/*	
-if(!empty($_GET['user'])){
-    $user=$_GET['user'];
-    if($user=='x'||$user=='X'){$com='O';}
-    if($user=='o'||$user=='O'||$user=='0'){$user='O';$com='X';}
-    $user=strtoupper($user);
-    
-	
-    if(empty($_GET['move'])){
-        
-    }
-    $grid=array();
-    $grid[0]=array('   ','   ','   ');
-    $grid[1]=array('   ','   ','   ');
-    $grid[2]=array('   ','   ','   ');
-    if(!empty($_GET['move'])){
-        $usermove=$_GET['move'];
-        $s=$_SESSION['usermove'];
-        $pos=strpos($usermove,$s);
-        if(!($pos===false)){echo 'This position is not empty!!';exit();}
-        $s=$_SESSION['commove'];
-        $pos=strpos($usermove,$s);
-        if(!($pos===false)){echo 'This position is not empty!!';exit();}
-        if(!empty($_SESSION['usermove'])){$_SESSION['usermove']=$_SESSION['usermove'].','.$usermove;}
-        else{$_SESSION['usermove']=$usermove;}
-        $moves=explode(',',$_SESSION['usermove']);
-        foreach($moves as $value){
-            switch($value){
-                case '1':$grid[0][0]=' '.$user.' ';
-                    break;
-                case '2':$grid[0][1]=' '.$user.' ';
-                    break;
-                case '3':$grid[0][2]=' '.$user.' ';
-                    break;
-                case '4':$grid[1][0]=' '.$user.' ';
-                    break;
-                case '5':$grid[1][1]=' '.$user.' ';
-                    break;
-                case '6':$grid[1][2]=' '.$user.' ';
-                    break;
-                case '7':$grid[2][0]=' '.$user.' ';
-                    break;
-                case '8':$grid[2][1]=' '.$user.' ';
-                    break;
-                case '9':$grid[2][2]=' '.$user.' ';
-                    break;
-            }
-        }
-        if(strlen($moves)==1){
-            $ran=rand(2,9);
-            if($ran==$moves[0]){
-                $ran=$ran-1;
-            }
-        }
-        else{
-            $ran=rand(1,9);
-            $i=0;
-            while(in_array($ran,$_SESSION['usermove'])){
-                $ran=rand(1,9);
-                $i++;
-                if($i>=9){$ran=12;break;}
-            }
-        }
-        if(!empty($_SESSION['commove'])){$_SESSION['commove']=$_SESSION['commove'].','.$ran;}
-        else{$_SESSION['commove']=$ran;}
-        $cmoves=explode(',',$_SESSION['commove']);
-        foreach($cmoves as $value){
-            switch($value){
-                case '1':$grid[0][0]=' '.$com.' ';
-                    break;
-                case '2':$grid[0][1]=' '.$com.' ';
-                    break;
-                case '3':$grid[0][2]=' '.$com.' ';
-                    break;
-                case '4':$grid[1][0]=' '.$com.' ';
-                    break;
-                case '5':$grid[1][1]=' '.$com.' ';
-                    break;
-                case '6':$grid[1][2]=' '.$com.' ';
-                    break;
-                case '7':$grid[2][0]=' '.$com.' ';
-                    break;
-                case '8':$grid[2][1]=' '.$com.' ';
-                    break;
-                case '9':$grid[2][2]=' '.$com.' ';
-                    break;
-            }
-        }
-    }
 
-	*/
+
 	echo '<br><br>Begin by entering the grid number of the desired target.';
     echo '<form action="',$_SERVER['PHP_SELF'],'" method="get" class="txtweb-form">';
     echo '(E.g.: B2 for 2nd row - 2nd column)<input type="text" name="move" />';
@@ -259,14 +259,7 @@ if(!empty($_GET['user'])){
 	echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
        echo '<form action="',$_SERVER['PHP_SELF'],'" method="get" class="txtweb-form">';
        echo '</body></html>';
-    exit();
 
-$_SESSION['usermove']='';
-$_SESSION['commove']='';
-echo '<h1>Welcome to BATTLESHIP</h1><br/>';
-echo '<form action="'.$_SERVER['PHP_SELF'].'" method="get" class="txtweb-form">';
-echo 'Enter an "X" and press PLAY to begin.<input type="text" name="user" />';
-echo '<input type="submit" value="PLAY" /></form>';
 ?>
 </body>
 </html>
