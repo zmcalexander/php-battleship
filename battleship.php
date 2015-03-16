@@ -22,6 +22,7 @@ $row8 = array(array(" O ", " H1"), array(" O ", " H2"), array(" O ", " H3"), arr
 $row9 = array(array(" O ", " I1"), array(" O ", " I2"), array(" O ", " I3"), array(" O ", " I4"), array(" O ", " I5"), array(" O ", " I6"), array(" O ", " I7"), array(" O ", " I8"), array(" O ", " I9"), array(" O ", "I10")); 
 $row10 = array(array(" O ", " J1"), array(" O ", " J2"), array(" O ", " J3"), array(" O ", " J4"), array(" O ", " J5"), array(" O ", " J6"), array(" O ", " J7"), array(" O ", " J8"), array(" O ", " J9"), array(" O ", "J10")); 
 
+
 // declare number of spaces per ship
 $carrier = 5; 
 $battleship = 4; 
@@ -29,74 +30,50 @@ $destroyer = 2;
 $submarine = 3; 
 $cruiser = 3; 
 
+
+$_SESSION["carrierSunk"] = false;
+$_SESSION["battleshipSunk"] = false;
+$_SESSION["destroyerSunk"] = false;
+$_SESSION["submarineSunk"]= false;
+$_SESSION["cruiserSunk"] = false;
+
+
 // assign board positions to ships
 $carrierPosition = array("C1", "C2", "C3", "C4", "C5");
 $battleshipPosition = array("G7", "G8", "G9", "G10");
 $destroyerPosition = array("I6", "J6");
 $submarinePosition = array("A10", "B10", "C10");
 $cruiserPosition = array("E3", "E4", "E5");
-
-
 $missed = false;
-
-
 
 function searchTheArrays() {
 // bring in the arrays
 global $row1, $row2, $row3, $row4, $row5, $row6, $row7, $row8, $row9, $row10;
 
-if (in_array_r($_GET["move"], $row1) != null) {
-	
-	
-}
-
 	for ($j = 0; $j < 10; $j++) {
 		if ($_GET["move"] == $row1[$j][1]) {
 		$row1[$j][0] = " X ";
-		break;
-		}
-		if($_GET["move"] == $row2[$j][1]) {
+		} else if($_GET["move"] == $row2[$j][1]) {
 		$row2[$j][0] = " X ";
-		break;
-		}
-		if($_GET["move"] == $row3[$j][1]) {
+		} else if($_GET["move"] == $row3[$j][1]) {
 		$row3[$j][0] = " X ";
-		break;
-		} 
-		if($_GET["move"] == $row4[$j][1]) {
+		} else if($_GET["move"] == $row4[$j][1]) {
 		$row4[$j][0] = " X ";
-		break;
-		} 
-		if($_GET["move"] == $row5[$j][1]) {
+		} else if($_GET["move"] == $row5[$j][1]) {
 		$row5[$j][0] = " X ";
-		break;
-		}
-		if($_GET["move"] == $row6[$j][1]) {
+		} else if($_GET["move"] == $row6[$j][1]) {
 		$row6[$j][0] = " X ";
-		break;
-		} 
-		if($_GET["move"] == $row7[$j][1]) {
+		} else if($_GET["move"] == $row7[$j][1]) {
 		$row7[$j][0] = " X ";
-		break;
-		} 
-		if($_GET["move"] == $row8[$j][1]) {
+		} else if($_GET["move"] == $row8[$j][1]) {
 		$row8[$j][0] = " X ";
-		break;
-		} 
-		if($_GET["move"] == $row9[$j][1]) {
+		} else if($_GET["move"] == $row9[$j][1]) {
 		$row9[$j][0] = " X ";
-		break;
-		} 
-		if($_GET["move"] == $row10[$j][1]) {
+		} else if($_GET["move"] == $row10[$j][1]) {
 		$row10[$j][0] = " X ";
-		break;
 		}
 		}
 }
-
-
-
-
 // retrieve hit counters from session
 function retrieveHitsFromSession() {
 	if (isset($_SESSION["carrierHits"])) {
@@ -104,7 +81,6 @@ function retrieveHitsFromSession() {
 	} else {
 		$carrierHits = 0;
 	} // end if
-
 	if (isset($_SESSION["battleshipHits"])) {
 		$battleshipHits = $_SESSION["battleshipHits"];
 	} else {
@@ -130,9 +106,9 @@ function retrieveHitsFromSession() {
 	} 
 }
 
-
+processMove();
+evaluateMove();
 retrieveHitsFromSession();
-searchTheArrays();
 
 // method to receive move from user and process move against the board
 function processMove() {
@@ -143,7 +119,7 @@ if(!empty($_GET['move'])) {
 	$move = $_GET['move'];
 	echo "Your current move: " . $move . "<br><br>";
 	global $missed;
-	
+	searchTheArrays();
 	
 	for ($i = 0; $i < sizeof($carrierPosition); $i++) {
 		if ($move == $carrierPosition[$i]) {
@@ -186,45 +162,39 @@ if(!empty($_GET['move'])) {
 		}
 	}
 }
-
 }
-
-
 // method to evaluate move after processMove method. This method displays messages to user about whether they hit or missed.
 function evaluateMove() {
     // bring in the variables
+	
     global $carrierHits, $battleshipHits, $destroyerHits, $submarineHits, $cruiserHits, $missed;
 if ($missed == true) {
 	echo " <br><br>You missed!";
 }
 if ($_SESSION["carrierHits"] >= 5) {
 	echo " <br><br>You sunk the Carrier!";
-	$_SESSION["totalScore"] += 5;
+	$_SESSION["carrierSunk"] = true;
 }
 if ($_SESSION["battleshipHits"] >= 4) {
 	echo " <br><br>You sunk the Battleship!";
-	$_SESSION["totalScore"] += 4;
+	$_SESSION["battleshipSunk"] = true;
 } 
 if ($_SESSION["destroyerHits"] >= 2) {
 	echo " <br><br>You sunk the Destroyer!";
-	$_SESSION["totalScore"] += 2;
+	$_SESSION["destroyerSunk"] = true;
 }
 if ($_SESSION["submarineHits"] >= 3) {
 	echo " <br><br>You sunk the Submarine!";
-	$_SESSION["totalScore"] += 3;
+	$_SESSION["submarineSunk"] = true;
 } 
 if ($_SESSION["cruiserHits"] >= 3) {
 	echo " <br><br>You sunk the Cruiser!";
-	$_SESSION["totalScore"] += 3;
+	$_SESSION["cruiserSunk"] = true;
 }
 }// end evaluateMove
 // call methods
-processMove();
-evaluateMove();
-
-
 function declareVictory() {
-	if (isset($_SESSION["totalScore"]) && $_SESSION["totalScore"] >= 17)
+	if ($_SESSION["carrierSunk"] == true && $_SESSION["battleshipSunk"] == true && $_SESSION["destroyerSunk"] == true && $_SESSION["submarineSunk"] == true && $_SESSION["cruiserSunk"] == true)
 	{ 
 	echo "<br><br>You won the game!";
 	}
@@ -232,10 +202,7 @@ function declareVictory() {
 	
 	
 }
-
-
 declareVictory();
-
 	echo '<br><br>Begin by entering the grid number of the desired target.';
     echo '<form action="',$_SERVER['PHP_SELF'],'" method="get" class="txtweb-form">';
     echo '(E.g.: B2 for 2nd row - 2nd column)<input type="text" name="move" />';
@@ -269,7 +236,6 @@ declareVictory();
 	echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
        echo '<form action="',$_SERVER['PHP_SELF'],'" method="get" class="txtweb-form">';
        echo '</body></html>';
-
 ?>
 </body>
 </html>
