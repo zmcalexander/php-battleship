@@ -39,14 +39,6 @@ $cruiserPosition = array("E3", "E4", "E5");
 
 $missed = false;
 
-function in_array_r($needle, $haystack, $strict = true) {
-    foreach ($haystack as $item) {
-        if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && in_array_r($needle, $item, $strict))) {
-            return $needle;
-        }
-    }
-}
-
 
 
 function searchTheArrays() {
@@ -205,26 +197,44 @@ function evaluateMove() {
 if ($missed == true) {
 	echo " <br><br>You missed!";
 }
-if ($_SESSION["carrierHits"] == 5) {
+if ($_SESSION["carrierHits"] >= 5) {
 	echo " <br><br>You sunk the Carrier!";
+	$_SESSION["totalScore"] += 5;
 }
-if ($_SESSION["battleshipHits"] == 4) {
+if ($_SESSION["battleshipHits"] >= 4) {
 	echo " <br><br>You sunk the Battleship!";
+	$_SESSION["totalScore"] += 4;
 } 
-if ($_SESSION["destroyerHits"] == 2) {
+if ($_SESSION["destroyerHits"] >= 2) {
 	echo " <br><br>You sunk the Destroyer!";
+	$_SESSION["totalScore"] += 2;
 }
-if ($_SESSION["submarineHits"] == 3) {
+if ($_SESSION["submarineHits"] >= 3) {
 	echo " <br><br>You sunk the Submarine!";
+	$_SESSION["totalScore"] += 3;
 } 
-if ($_SESSION["cruiserHits"] == 3) {
+if ($_SESSION["cruiserHits"] >= 3) {
 	echo " <br><br>You sunk the Cruiser!";
+	$_SESSION["totalScore"] += 3;
 }
 }// end evaluateMove
 // call methods
 processMove();
 evaluateMove();
 
+
+function declareVictory() {
+	if (isset($_SESSION["totalScore"]) && $_SESSION["totalScore"] >= 17)
+	{ 
+	echo "<br><br>You won the game!";
+	}
+	
+	
+	
+}
+
+
+declareVictory();
 
 	echo '<br><br>Begin by entering the grid number of the desired target.';
     echo '<form action="',$_SERVER['PHP_SELF'],'" method="get" class="txtweb-form">';
