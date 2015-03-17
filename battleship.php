@@ -6,38 +6,42 @@ session_start();
 <title>Battleship</title>
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 <meta name='txtweb-appkey' content ='1205be63-8293-4c02-82ce-17c500075e80' />
+<script type='text/javascript' src='ajax.js'></script>
+<style type="text/css">
+			body {
+				text-align:center;
+				font-weight:bold;
+				background:aqua;
+			}
+
+</style>
 </head>
 <body>
+<h1>BattleShip</h1
 <?php
 	
 // build the column arrays
-$row1 = array(array(" O ", " A1"), array(" O ", " A2"), array(" O ", " A3"), array(" O ", " A4"), array(" O ", " A5"), array(" O ", " A6"), array(" O ", " A7"), array(" O ", " A8"), array(" O ", " A9"), array(" O ", "A10")); 
-$row2 = array(array(" O ", " B1"), array(" O ", " B2"), array(" O ", " B3"), array(" O ", " B4"), array(" O ", " B5"), array(" O ", " B6"), array(" O ", " B7"), array(" O ", " B8"), array(" O ", " B9"), array(" O ", "B10")); 
-$row3 = array(array(" O ", " C1"), array(" O ", " C2"), array(" O ", " C3"), array(" O ", " C4"), array(" O ", " C5"), array(" O ", " C6"), array(" O ", " C7"), array(" O ", " C8"), array(" O ", " C9"), array(" O ", "C10")); 
-$row4 = array(array(" O ", " D1"), array(" O ", " D2"), array(" O ", " D3"), array(" O ", " D4"), array(" O ", " D5"), array(" O ", " D6"), array(" O ", " D7"), array(" O ", " D8"), array(" O ", " D9"), array(" O ", "D10")); 
-$row5 = array(array(" O ", " E1"), array(" O ", " E2"), array(" O ", " E3"), array(" O ", " E4"), array(" O ", " E5"), array(" O ", " E6"), array(" O ", " E7"), array(" O ", " E8"), array(" O ", " E9"), array(" O ", "E10")); 
-$row6 = array(array(" O ", " F1"), array(" O ", " F2"), array(" O ", " F3"), array(" O ", " F4"), array(" O ", " F5"), array(" O ", " F6"), array(" O ", " F7"), array(" O ", " F8"), array(" O ", " F9"), array(" O ", "F10")); 
-$row7 = array(array(" O ", " G1"), array(" O ", " G2"), array(" O ", " G3"), array(" O ", " G4"), array(" O ", " G5"), array(" O ", " G6"), array(" O ", " G7"), array(" O ", " G8"), array(" O ", " G9"), array(" O ", "G10")); 
-$row8 = array(array(" O ", " H1"), array(" O ", " H2"), array(" O ", " H3"), array(" O ", " H4"), array(" O ", " H5"), array(" O ", " H6"), array(" O ", " H7"), array(" O ", " H8"), array(" O ", " H9"), array(" O ", "H10")); 
-$row9 = array(array(" O ", " I1"), array(" O ", " I2"), array(" O ", " I3"), array(" O ", " I4"), array(" O ", " I5"), array(" O ", " I6"), array(" O ", " I7"), array(" O ", " I8"), array(" O ", " I9"), array(" O ", "I10")); 
-$row10 = array(array(" O ", " J1"), array(" O ", " J2"), array(" O ", " J3"), array(" O ", " J4"), array(" O ", " J5"), array(" O ", " J6"), array(" O ", " J7"), array(" O ", " J8"), array(" O ", " J9"), array(" O ", "J10")); 
-
-
+$row1 = array(array(" ~ ", " A1"), array(" ~ ", " A2"), array(" ~ ", " A3"), array(" ~ ", " A4"), array(" ~ ", " A5"), array(" ~ ", " A6"), array(" ~ ", " A7"), array(" ~ ", " A8"), array(" ~ ", " A9"), array(" ~ ", "A10")); 
+$row2 = array(array(" ~ ", " B1"), array(" ~ ", " B2"), array(" ~ ", " B3"), array(" ~ ", " B4"), array(" ~ ", " B5"), array(" ~ ", " B6"), array(" ~ ", " B7"), array(" ~ ", " B8"), array(" ~ ", " B9"), array(" ~ ", "B10")); 
+$row3 = array(array(" ~ ", " C1"), array(" ~ ", " C2"), array(" ~ ", " C3"), array(" ~ ", " C4"), array(" ~ ", " C5"), array(" ~ ", " C6"), array(" ~ ", " C7"), array(" ~ ", " C8"), array(" ~ ", " C9"), array(" ~ ", "C10")); 
+$row4 = array(array(" ~ ", " D1"), array(" ~ ", " D2"), array(" ~ ", " D3"), array(" ~ ", " D4"), array(" ~ ", " D5"), array(" ~ ", " D6"), array(" ~ ", " D7"), array(" ~ ", " D8"), array(" ~ ", " D9"), array(" ~ ", "D10")); 
+$row5 = array(array(" ~ ", " E1"), array(" ~ ", " E2"), array(" ~ ", " E3"), array(" ~ ", " E4"), array(" ~ ", " E5"), array(" ~ ", " E6"), array(" ~ ", " E7"), array(" ~ ", " E8"), array(" ~ ", " E9"), array(" ~ ", "E10")); 
+$row6 = array(array(" ~ ", " F1"), array(" ~ ", " F2"), array(" ~ ", " F3"), array(" ~ ", " F4"), array(" ~ ", " F5"), array(" ~ ", " F6"), array(" ~ ", " F7"), array(" ~ ", " F8"), array(" ~ ", " F9"), array(" ~ ", "F10")); 
+$row7 = array(array(" ~ ", " G1"), array(" ~ ", " G2"), array(" ~ ", " G3"), array(" ~ ", " G4"), array(" ~ ", " G5"), array(" ~ ", " G6"), array(" ~ ", " G7"), array(" ~ ", " G8"), array(" ~ ", " G9"), array(" ~ ", "G10")); 
+$row8 = array(array(" ~ ", " H1"), array(" ~ ", " H2"), array(" ~ ", " H3"), array(" ~ ", " H4"), array(" ~ ", " H5"), array(" ~ ", " H6"), array(" ~ ", " H7"), array(" ~ ", " H8"), array(" ~ ", " H9"), array(" ~ ", "H10")); 
+$row9 = array(array(" ~ ", " I1"), array(" ~ ", " I2"), array(" ~ ", " I3"), array(" ~ ", " I4"), array(" ~ ", " I5"), array(" ~ ", " I6"), array(" ~ ", " I7"), array(" ~ ", " I8"), array(" ~ ", " I9"), array(" ~ ", "I10")); 
+$row10 = array(array(" ~ ", " J1"), array(" ~ ", " J2"), array(" ~ ", " J3"), array(" ~ ", " J4"), array(" ~ ", " J5"), array(" ~ ", " J6"), array(" ~ ", " J7"), array(" ~ ", " J8"), array(" ~ ", " J9"), array(" ~ ", "J10")); 
 // declare number of spaces per ship
 $carrier = 5; 
 $battleship = 4; 
 $destroyer = 2; 
 $submarine = 3; 
 $cruiser = 3; 
-
-
 $_SESSION["carrierSunk"] = false;
 $_SESSION["battleshipSunk"] = false;
 $_SESSION["destroyerSunk"] = false;
 $_SESSION["submarineSunk"]= false;
 $_SESSION["cruiserSunk"] = false;
-
-
 // assign board positions to ships
 $carrierPosition = array("C1", "C2", "C3", "C4", "C5");
 $battleshipPosition = array("G7", "G8", "G9", "G10");
@@ -45,7 +49,6 @@ $destroyerPosition = array("I6", "J6");
 $submarinePosition = array("A10", "B10", "C10");
 $cruiserPosition = array("E3", "E4", "E5");
 $missed = false;
-
 function searchTheArrays() {
 // bring in the arrays
 global $row1, $row2, $row3, $row4, $row5, $row6, $row7, $row8, $row9, $row10;
@@ -106,11 +109,9 @@ function retrieveHitsFromSession() {
 		$cruiserHits = 0;
 	} 
 }
-
 processMove();
 evaluateMove();
 retrieveHitsFromSession();
-
 // method to receive move from user and process move against the board
 function processMove() {
 // bring in the variables
@@ -209,6 +210,14 @@ declareVictory();
     echo '(E.g.: B2 for 2nd row - 2nd column)<input type="text" name="move" />';
     echo '<input type="hidden" name="user" value="',$user,'" />';
     echo '<input type="submit" value="FIRE" /></form>';
+	
+		echo <<< HERE
+ <form action = "" method = "post"> 
+ <BUTTON onclick "poker.html">PLAY AGAIN?</BUTTON>
+ <BUTTON onclick = "window.close();">EXIT GAME</BUTTON>
+</form>
+HERE;
+
     echo '<pre>';
 	echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
 	echo '| * | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10| * |<br />';
