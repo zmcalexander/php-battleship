@@ -73,7 +73,7 @@ global $row1, $row2, $row3, $row4, $row5, $row6, $row7, $row8, $row9, $row10;
 		$row10[$j][0] = " X ";
 		else:
 		endif;
-		}
+	}
 }
 // retrieve hit counters from session
 function retrieveHitsFromSession() {
@@ -117,7 +117,7 @@ function processMove() {
     global $carrierPosition, $battleshipPosition, $destroyerPosition, $submarinePosition, $cruiserPosition;
     // global $carrierHits, $battleshipHits, $destroyerHits, $submarineHits, $cruiserHits;
 if(!empty($_GET['move'])) {
-	$move = $_GET['move'];
+	$move = strtoupper($_GET['move']);
 	echo "Your current move: " . $move . "<br><br>";
 	global $missed;
 	searchTheArrays();
