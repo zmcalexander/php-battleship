@@ -13,35 +13,77 @@ session_start();
 				font-weight:bold;
 				background:aqua;
 			}
-
 </style>
 </head>
 <body>
 <h1>BattleShip</h1
 <?php
+
+// initialize session variables
+if (isset($_SESSION["carrierHits"])) {
+} else {
+$_SESSION["carrierHits"] = 0;
+}
+if (isset($_SESSION["battleshipHits"])) {
+} else {
+	$_SESSION["battleshipHits"] = 0;
+}
+if (isset($_SESSION["destroyerHits"])) {
+} else {
+	$_SESSION["destroyerHits"] = 0;
+}
+if (isset($_SESSION["submarineHits"])) {
+} else { 
+$_SESSION["submarineHits"]= 0;
+}
+if (isset($_SESSION["cruiserHits"])) {
+} else {
+	$_SESSION["cruiserHits"] = 0;
+}
+if (isset($_SESSION["userMoves"])) {
+	$userMoves = $_SESSION["userMoves"];
+} else {
+	$_SESSION["userMoves"] = array();
+}
+
+var_dump($userMoves);
+/*
+if (isset($_SESSION["carrierSunk"]) && $_SESSION["carrierSunk"] == true) {
+	echo "You sunk the Carrier!";
+} else {
+	$_SESSION["carrierSunk"] = false;
+}
+if (isset($_SESSION["destroyerSunk"]) && $_SESSION["destroyerSunk"] == true) {
+	echo "You sunk the Destroyer!";
+} else {
+	$_SESSION["destroyerSunk"] = false;
+}
+if (isset($_SESSION["submarineSunk"]) && $_SESSION["submarineSunk"] == true) {
+	echo "You sunk the Submarine!";
+} else { 
+$_SESSION["submarineSunk"] = false;
+}
+if (isset($_SESSION["battleshipSunk"]) && $_SESSION["battleshipSunk"] == true) {
+	echo "You sunk the Battleship!"
+} else {
+	$_SESSION["battleshipSunk"] = false;
+}
+if (isset($_SESSION["cruiserSunk"]) && $_SESSION["cruiserSunk"] = true) {
+	echo "You sunk the Cruiser!";
+} else {
+	$_SESSION["cruiserSunk"]= false;
+}
+*/
 	
-// build the column arrays
-$row1 = array(array(" ~ ", " A1"), array(" ~ ", " A2"), array(" ~ ", " A3"), array(" ~ ", " A4"), array(" ~ ", " A5"), array(" ~ ", " A6"), array(" ~ ", " A7"), array(" ~ ", " A8"), array(" ~ ", " A9"), array(" ~ ", "A10")); 
-$row2 = array(array(" ~ ", " B1"), array(" ~ ", " B2"), array(" ~ ", " B3"), array(" ~ ", " B4"), array(" ~ ", " B5"), array(" ~ ", " B6"), array(" ~ ", " B7"), array(" ~ ", " B8"), array(" ~ ", " B9"), array(" ~ ", "B10")); 
-$row3 = array(array(" ~ ", " C1"), array(" ~ ", " C2"), array(" ~ ", " C3"), array(" ~ ", " C4"), array(" ~ ", " C5"), array(" ~ ", " C6"), array(" ~ ", " C7"), array(" ~ ", " C8"), array(" ~ ", " C9"), array(" ~ ", "C10")); 
-$row4 = array(array(" ~ ", " D1"), array(" ~ ", " D2"), array(" ~ ", " D3"), array(" ~ ", " D4"), array(" ~ ", " D5"), array(" ~ ", " D6"), array(" ~ ", " D7"), array(" ~ ", " D8"), array(" ~ ", " D9"), array(" ~ ", "D10")); 
-$row5 = array(array(" ~ ", " E1"), array(" ~ ", " E2"), array(" ~ ", " E3"), array(" ~ ", " E4"), array(" ~ ", " E5"), array(" ~ ", " E6"), array(" ~ ", " E7"), array(" ~ ", " E8"), array(" ~ ", " E9"), array(" ~ ", "E10")); 
-$row6 = array(array(" ~ ", " F1"), array(" ~ ", " F2"), array(" ~ ", " F3"), array(" ~ ", " F4"), array(" ~ ", " F5"), array(" ~ ", " F6"), array(" ~ ", " F7"), array(" ~ ", " F8"), array(" ~ ", " F9"), array(" ~ ", "F10")); 
-$row7 = array(array(" ~ ", " G1"), array(" ~ ", " G2"), array(" ~ ", " G3"), array(" ~ ", " G4"), array(" ~ ", " G5"), array(" ~ ", " G6"), array(" ~ ", " G7"), array(" ~ ", " G8"), array(" ~ ", " G9"), array(" ~ ", "G10")); 
-$row8 = array(array(" ~ ", " H1"), array(" ~ ", " H2"), array(" ~ ", " H3"), array(" ~ ", " H4"), array(" ~ ", " H5"), array(" ~ ", " H6"), array(" ~ ", " H7"), array(" ~ ", " H8"), array(" ~ ", " H9"), array(" ~ ", "H10")); 
-$row9 = array(array(" ~ ", " I1"), array(" ~ ", " I2"), array(" ~ ", " I3"), array(" ~ ", " I4"), array(" ~ ", " I5"), array(" ~ ", " I6"), array(" ~ ", " I7"), array(" ~ ", " I8"), array(" ~ ", " I9"), array(" ~ ", "I10")); 
-$row10 = array(array(" ~ ", " J1"), array(" ~ ", " J2"), array(" ~ ", " J3"), array(" ~ ", " J4"), array(" ~ ", " J5"), array(" ~ ", " J6"), array(" ~ ", " J7"), array(" ~ ", " J8"), array(" ~ ", " J9"), array(" ~ ", "J10")); 
+	
 // declare number of spaces per ship
 $carrier = 5; 
 $battleship = 4; 
 $destroyer = 2; 
 $submarine = 3; 
 $cruiser = 3; 
-$_SESSION["carrierSunk"] = false;
-$_SESSION["battleshipSunk"] = false;
-$_SESSION["destroyerSunk"] = false;
-$_SESSION["submarineSunk"]= false;
-$_SESSION["cruiserSunk"] = false;
+
+
 // assign board positions to ships
 $carrierPosition = array("C1", "C2", "C3", "C4", "C5");
 $battleshipPosition = array("G7", "G8", "G9", "G10");
@@ -49,69 +91,28 @@ $destroyerPosition = array("I6", "J6");
 $submarinePosition = array("A10", "B10", "C10");
 $cruiserPosition = array("E3", "E4", "E5");
 $missed = false;
-function searchTheArrays() {
-// bring in the arrays
-global $row1, $row2, $row3, $row4, $row5, $row6, $row7, $row8, $row9, $row10;
-	$move = $_GET["move"];
-	for ($j = 0; $j < 10; $j++) {
-		if ($move == $row1[$j][1]):
-		$row1[$j][0] = " X ";
-		elseif($move == $row2[$j][1]):
-		$row2[$j][0] = " X ";
-		elseif($move == $row3[$j][1]):
-		$row3[$j][0] = " X ";
-		elseif($move == $row4[$j][1]):
-		$row4[$j][0] = " X ";
-		elseif($move == $row5[$j][1]):
-		$row5[$j][0] = " X ";
-		elseif($move == $row6[$j][1]):
-		$row6[$j][0] = " X ";
-		elseif($move == $row7[$j][1]):
-		$row7[$j][0] = " X ";
-		elseif($move == $row8[$j][1]):
-		$row8[$j][0] = " X ";
-		elseif($move == $row9[$j][1]):
-		$row9[$j][0] = " X ";
-		elseif($move == $row10[$j][1]):
-		$row10[$j][0] = " X ";
-		else:
-		endif;
-	}
+
+
+$matrix = array ();
+$move = $_GET["move"];
+
+for ($i = "A"; $i <= "J"; $i++) {
+   for ($c = 1; $c <= 10; $c++) {
+    $matrix["{$i}{$c}"] = " ~ ";
+   }
 }
-// retrieve hit counters from session
-function retrieveHitsFromSession() {
-	if (isset($_SESSION["carrierHits"])) {
-		$carrierHits = $_SESSION["carrierHits"];
-	} else {
-		$carrierHits = 0;
-	} // end if
-	if (isset($_SESSION["battleshipHits"])) {
-		$battleshipHits = $_SESSION["battleshipHits"];
-	} else {
-		$battleshipHits = 0;
-	} 
-	
-	if (isset($_SESSION["destroyerHits"])) {
-		$destroyerHits = $_SESSION["destroyerHits"];
-	} else {
-		$destroyerHits = 0;
-	} 
-	
-	if (isset($_SESSION["submarineHits"])) {
-		$submarineHits = $_SESSION["submarineHits"];
-	} else {
-		$submarineHits = 0;
-	} 
-	
-	if (isset($_SESSION["cruiserHits"])) {
-		$cruiserHits = $_SESSION["cruiserHits"];
-	} else {
-		$cruiserHits = 0;
-	} 
-}
+
+
+$matrix[$move] = " X ";
+
+array_push($_SESSION["userMoves"], $_GET["move"]);
+
+
+
 processMove();
 evaluateMove();
-retrieveHitsFromSession();
+
+
 // method to receive move from user and process move against the board
 function processMove() {
 // bring in the variables
@@ -121,7 +122,6 @@ if(!empty($_GET['move'])) {
 	$move = strtoupper($_GET['move']);
 	echo "Your current move: " . $move . "<br><br>";
 	global $missed;
-	searchTheArrays();
 	
 	for ($i = 0; $i < sizeof($carrierPosition); $i++) {
 		if ($move == $carrierPosition[$i]) {
@@ -173,23 +173,23 @@ function evaluateMove() {
 if ($missed == true) {
 	echo " <br><br>You missed!";
 }
-if ($_SESSION["carrierHits"] >= 5) {
+if (isset($_SESSION["carrierHits"]) && $_SESSION["carrierHits"] >= 5) {
 	echo " <br><br>You sunk the Carrier!";
 	$_SESSION["carrierSunk"] = true;
 }
-if ($_SESSION["battleshipHits"] >= 4) {
+if (isset($_SESSION["battleshipHits"]) && $_SESSION["battleshipHits"] >= 4) {
 	echo " <br><br>You sunk the Battleship!";
 	$_SESSION["battleshipSunk"] = true;
 } 
-if ($_SESSION["destroyerHits"] >= 2) {
+if (isset($_SESSION["destroyerHits"]) && $_SESSION["destroyerHits"] >= 2) {
 	echo " <br><br>You sunk the Destroyer!";
 	$_SESSION["destroyerSunk"] = true;
 }
-if ($_SESSION["submarineHits"] >= 3) {
+if (isset($_SESSION["submarineHits"]) && $_SESSION["submarineHits"] >= 3) {
 	echo " <br><br>You sunk the Submarine!";
 	$_SESSION["submarineSunk"] = true;
 } 
-if ($_SESSION["cruiserHits"] >= 3) {
+if (isset($_SESSION["cruiserHits"]) && $_SESSION["cruiserHits"] >= 3) {
 	echo " <br><br>You sunk the Cruiser!";
 	$_SESSION["cruiserSunk"] = true;
 }
@@ -222,25 +222,25 @@ HERE;
 	echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
 	echo '| * | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10| * |<br />';
 	echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
-  echo '| A |',$row1[0][0],'|',$row1[1][0],'|',$row1[2][0],'|',$row1[3][0],'|',$row1[4][0],'|',$row1[5][0],'|',$row1[6][0],'|',$row1[7][0],'|',$row1[8][0],'|',$row1[9][0],'| A |<br />';
+  echo '| A |',$matrix['A1'],'|',$matrix['A2'],'|',$matrix['A3'],'|',$matrix['A4'],'|',$matrix['A5'],'|',$matrix['A6'],'|',$matrix['A7'],'|',$matrix['A8'],'|',$matrix['A9'],'|',$matrix['A10'],'| A |<br />';
   echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
-  echo '| B |',$row2[0][0],'|',$row2[1][0],'|',$row2[2][0],'|',$row2[3][0],'|',$row2[4][0],'|',$row2[5][0],'|',$row2[6][0],'|',$row2[7][0],'|',$row2[8][0],'|',$row2[9][0],'| B |<br />';
+  echo '| B |',$matrix['B1'],'|',$matrix['B2'],'|',$matrix['B3'],'|',$matrix['B4'],'|',$matrix['B5'],'|',$matrix['B6'],'|',$matrix['B7'],'|',$matrix['B8'],'|',$matrix['B9'],'|',$matrix['B10'],'| B |<br />';
   echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
-  echo '| C |',$row3[0][0],'|',$row3[1][0],'|',$row3[2][0],'|',$row3[3][0],'|',$row3[4][0],'|',$row3[5][0],'|',$row3[6][0],'|',$row3[7][0],'|',$row3[8][0],'|',$row3[9][0],'| C |<br />';
+  echo '| C |',$matrix['C1'],'|',$matrix['C2'],'|',$matrix['C3'],'|',$matrix['C4'],'|',$matrix['C5'],'|',$matrix['C6'],'|',$matrix['C7'],'|',$matrix['C8'],'|',$matrix['C9'],'|',$matrix['C10'],'| C |<br />';
 	echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
-	echo '| D |',$row4[0][0],'|',$row4[1][0],'|',$row4[2][0],'|',$row4[3][0],'|',$row4[4][0],'|',$row4[5][0],'|',$row4[6][0],'|',$row4[7][0],'|',$row4[8][0],'|',$row4[9][0],'| D |<br />';
+	echo '| D |',$matrix['D1'],'|',$matrix['D2'],'|',$matrix['D3'],'|',$matrix['D4'],'|',$matrix['D5'],'|',$matrix['D6'],'|',$matrix['D7'],'|',$matrix['D8'],'|',$matrix['D9'],'|',$matrix['D10'],'| D |<br />';
   echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
-  echo '| E |',$row5[0][0],'|',$row5[1][0],'|',$row5[2][0],'|',$row5[3][0],'|',$row5[4][0],'|',$row5[5][0],'|',$row5[6][0],'|',$row5[7][0],'|',$row5[8][0],'|',$row5[9][0],'| E |<br />';
+  echo '| E |',$matrix['E1'],'|',$matrix['E2'],'|',$matrix['E3'],'|',$matrix['E4'],'|',$matrix['E5'],'|',$matrix['E6'],'|',$matrix['E7'],'|',$matrix['E8'],'|',$matrix['E9'],'|',$matrix['E10'],'| E |<br />';
   echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
-	echo '| F |',$row6[0][0],'|',$row6[1][0],'|',$row6[2][0],'|',$row6[3][0],'|',$row6[4][0],'|',$row6[5][0],'|',$row6[6][0],'|',$row6[7][0],'|',$row6[8][0],'|',$row6[9][0],'| F |<br />';
+	echo '| F |',$matrix['F1'],'|',$matrix['F2'],'|',$matrix['F3'],'|',$matrix['F4'],'|',$matrix['F5'],'|',$matrix['F6'],'|',$matrix['F7'],'|',$matrix['F8'],'|',$matrix['F9'],'|',$matrix['F10'],'| F |<br />';
   echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
-  echo '| G |',$row7[0][0],'|',$row7[1][0],'|',$row7[2][0],'|',$row7[3][0],'|',$row7[4][0],'|',$row7[5][0],'|',$row7[6][0],'|',$row7[7][0],'|',$row7[8][0],'|',$row7[9][0],'| G |<br />';
+  echo '| G |',$matrix['G1'],'|',$matrix['G2'],'|',$matrix['G3'],'|',$matrix['G4'],'|',$matrix['G5'],'|',$matrix['G6'],'|',$matrix['G7'],'|',$matrix['G8'],'|',$matrix['G9'],'|',$matrix['G10'],'| G |<br />';
 	echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
-	echo '| H |',$row8[0][0],'|',$row8[1][0],'|',$row8[2][0],'|',$row8[3][0],'|',$row8[4][0],'|',$row8[5][0],'|',$row8[6][0],'|',$row8[7][0],'|',$row8[8][0],'|',$row8[9][0],'| H |<br />';
+	echo '| H |',$matrix['H1'],'|',$matrix['H2'],'|',$matrix['H3'],'|',$matrix['H4'],'|',$matrix['H5'],'|',$matrix['H6'],'|',$matrix['H7'],'|',$matrix['H8'],'|',$matrix['H9'],'|',$matrix['H10'],'| H |<br />';
   echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
-  echo '| I |',$row9[0][0],'|',$row9[1][0],'|',$row9[2][0],'|',$row9[3][0],'|',$row9[4][0],'|',$row9[5][0],'|',$row9[6][0],'|',$row9[7][0],'|',$row9[8][0],'|',$row9[9][0],'| I |<br />';
+  echo '| I |',$matrix['I1'],'|',$matrix['I2'],'|',$matrix['I3'],'|',$matrix['I4'],'|',$matrix['I5'],'|',$matrix['I6'],'|',$matrix['I7'],'|',$matrix['I8'],'|',$matrix['I9'],'|',$matrix['I10'],'| I |<br />';
   echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
-  echo '| J |',$row10[0][0],'|',$row10[1][0],'|',$row10[2][0],'|',$row10[3][0],'|',$row10[4][0],'|',$row10[5][0],'|',$row10[6][0],'|',$row10[7][0],'|',$row10[8][0],'|',$row10[9][0],'| J |<br />';
+  echo '| J |',$matrix['J1'],'|',$matrix['J2'],'|',$matrix['J3'],'|',$matrix['J4'],'|',$matrix['J5'],'|',$matrix['J6'],'|',$matrix['J7'],'|',$matrix['J8'],'|',$matrix['J9'],'|',$matrix['J10'],'| J |<br />';
 	echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
 	echo '| * | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10| * |<br />';
 	echo '|---|---|---|---|---|---|---|---|---|---|---|---|<br />';
