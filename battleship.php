@@ -17,6 +17,7 @@ session_start();
 </head>
 <body>
 <h1>BattleShip</h1
+
 <?php
 
 // initialize session variables
@@ -44,9 +45,10 @@ if (isset($_SESSION["userMoves"])) {
 	$userMoves = $_SESSION["userMoves"];
 } else {
 	$_SESSION["userMoves"] = array();
+	$userMoves = $_SESSION["userMoves"];
 }
 
-// var_dump($userMoves);
+
 
 /*
 if (isset($_SESSION["carrierSunk"]) && $_SESSION["carrierSunk"] == true) {
@@ -95,7 +97,12 @@ $missed = false;
 
 
 $matrix = array ();
-$move = $_GET["move"];
+if (isset($_GET["move"])) {
+	$move = $_GET["move"];
+} else {
+	$move = 0;
+	$_GET["move"] = 0;
+}
 
 for ($i = "A"; $i <= "J"; $i++) {
    for ($c = 1; $c <= 10; $c++) {
@@ -104,40 +111,41 @@ for ($i = "A"; $i <= "J"; $i++) {
 }
 
 
-$matrix[$move] = " X ";
+// $matrix[$move] = " X ";
 
 array_push($_SESSION["userMoves"], strtoupper($move));
 
+
+	if (array_search(strtoupper($_GET['move']), $carrierPosition) !== FALSE) {
+	$matrix[strtoupper($_GET['move'])] = " C ";
+	} elseif (array_search(strtoupper($_GET['move']), $destroyerPosition) !== FALSE) {
+	$matrix[strtoupper($_GET['move'])] = " D ";
+	} elseif (array_search(strtoupper($_GET['move']), $submarinePosition) !== FALSE) {
+	$matrix[strtoupper($_GET['move'])] = " S ";
+	} elseif (array_search(strtoupper($_GET['move']), $cruiserPosition) !== FALSE) {
+	$matrix[strtoupper($_GET['move'])] = " C ";
+	} elseif (array_search(strtoupper($_GET['move']), $battleshipPosition) !== FALSE) {
+	$matrix[strtoupper($_GET['move'])] = " B ";
+	} else {
+	$matrix[strtoupper($_GET['move'])] = " X ";
+	}
+
 foreach ($userMoves as $userMove) {
-if (array_search($userMove, $carrierPosition)) {
+	if (array_search($userMove, $carrierPosition) !== FALSE) {
 	$matrix[$userMove] = " C ";
-	} elseif (array_search($userMove, $battleshipPosition)) {
+	} elseif (array_search($userMove, $battleshipPosition) !== FALSE) {
 	$matrix[$userMove] = " B ";
-	} elseif (array_search($userMove, $destroyerPosition)) {
+	} elseif (array_search($userMove, $destroyerPosition) !== FALSE) {
 	$matrix[$userMove] = " D ";
-	} elseif (array_search($userMove, $submarinePosition)) {
+	} elseif (array_search($userMove, $submarinePosition) !== FALSE) {
 	$matrix[$userMove] = " S ";
-	} elseif (array_search($userMove, $cruiserPosition)) {
-	$matrix[$userMove] = " C ";
-	} elseif (array_search($userMove, $carrierPosition)) {
+	} elseif (array_search($userMove, $cruiserPosition) !== FALSE) {
 	$matrix[$userMove] = " C ";
 	} else {
 	$matrix[$userMove] = " X ";	
 	}
 }
 
-	if (array_search($move, $carrierPosition)) {
-	$matrix[$userMove] = " C ";
-	} elseif (array_search($move, $destroyerPosition)) {
-	$matrix[$userMove] = " D ";
-	} elseif (array_search($move, $submarinePosition)) {
-	$matrix[$userMove] = " S ";
-	} elseif (array_search($move, $cruiserPosition)) {
-	$matrix[$userMove] = " C ";
-	} elseif (array_search($move, $battleshipPosition)) {
-	$matrix[$userMove] = " B ";
-	} else {
-	}
 
 processMove();
 evaluateMove();
@@ -146,52 +154,41 @@ evaluateMove();
 // method to receive move from user and process move against the board
 function processMove() {
 // bring in the variables
-    global $carrierPosition, $battleshipPosition, $destroyerPosition, $submarinePosition, $cruiserPosition;
+    global $carrierPosition, $battleshipPosition, $destroyerPosition, $submarinePosition, $cruiserPosition, $userMoves;
     // global $carrierHits, $battleshipHits, $destroyerHits, $submarineHits, $cruiserHits;
 if(!empty($_GET['move'])) {
 	$move = strtoupper($_GET['move']);
 	echo "Your current move: " . $move . "<br><br>";
-	global $missed;
 	
 	for ($i = 0; $i < sizeof($carrierPosition); $i++) {
-		if ($move == $carrierPosition[$i]) {
+		if ($move == $carrierPosition[$i] && (array_search($move, $userMoves) == FALSE)) {
 			$_SESSION["carrierHits"]++;
-			echo " <br><br>You hit the Carrier!";
-		} else {
-			$missed == true;
+			echo " <br>You hit the Carrier!";
 		}
 	}
 	for ($i = 0; $i < sizeof($battleshipPosition); $i++) {
-		if ($move == $battleshipPosition[$i]) {
+		if ($move == $battleshipPosition[$i] && (array_search($move, $userMoves) == FALSE)) {
 			$_SESSION["battleshipHits"]++;
-			echo " <br><br>You hit the Battleship!";
-		}  else {
-			$missed == true;
-		}
+			echo " <br>You hit the Battleship!";
+		} 
 	}
 	for ($i = 0; $i < sizeof($destroyerPosition); $i++) {
-		if ($move == $destroyerPosition[$i]) {
+		if ($move == $destroyerPosition[$i] && (array_search($move, $userMoves) == FALSE)) {
 			$_SESSION["destroyerHits"]++;
-			echo " <br><br>You hit the Destroyer!";
-		}  else {
-			$missed == true;
-		}
+			echo " <br>You hit the Destroyer!";
+		} 
 	}
 	for ($i = 0; $i < sizeof($submarinePosition); $i++) {
-		if ($move == $submarinePosition[$i]) {
+		if ($move == $submarinePosition[$i] && (array_search($move, $userMoves) == FALSE)) {
 			$_SESSION["submarineHits"]++;
-			echo " <br><br>You hit the Submarine!";
-		}  else {
-			$missed == true;
-		}
+			echo " <br>You hit the Submarine!";
+		} 
 	}
 	for ($i = 0; $i < sizeof($cruiserPosition); $i++) {
-		if ($move == $cruiserPosition[$i]) {
+		if ($move == $cruiserPosition[$i] && (array_search($move, $userMoves) == FALSE)) {
 			$_SESSION["cruiserHits"]++;
-			echo " <br><br>You hit the Cruiser!";
-		}  else {
-		  $missed == true;
-		}
+			echo " <br>You hit the Cruiser!";
+		} 
 	}
 }
 }
@@ -204,31 +201,32 @@ if ($missed == true) {
 	echo " <br><br>You missed!";
 }
 if (isset($_SESSION["carrierHits"]) && $_SESSION["carrierHits"] >= 5) {
-	echo " <br><br>You sunk the Carrier!";
+	echo " <br>You sunk the Carrier!";
 	$_SESSION["carrierSunk"] = true;
 }
 if (isset($_SESSION["battleshipHits"]) && $_SESSION["battleshipHits"] >= 4) {
-	echo " <br><br>You sunk the Battleship!";
+	echo " <br>You sunk the Battleship!";
 	$_SESSION["battleshipSunk"] = true;
 } 
 if (isset($_SESSION["destroyerHits"]) && $_SESSION["destroyerHits"] >= 2) {
-	echo " <br><br>You sunk the Destroyer!";
+	echo " <br>You sunk the Destroyer!";
 	$_SESSION["destroyerSunk"] = true;
 }
 if (isset($_SESSION["submarineHits"]) && $_SESSION["submarineHits"] >= 3) {
-	echo " <br><br>You sunk the Submarine!";
+	echo " <br>You sunk the Submarine!";
 	$_SESSION["submarineSunk"] = true;
 } 
 if (isset($_SESSION["cruiserHits"]) && $_SESSION["cruiserHits"] >= 3) {
-	echo " <br><br>You sunk the Cruiser!";
+	echo " <br>You sunk the Cruiser!";
 	$_SESSION["cruiserSunk"] = true;
 }
 }// end evaluateMove
 // call methods
 function declareVictory() {
-	if ($_SESSION["carrierSunk"] == true && $_SESSION["battleshipSunk"] == true && $_SESSION["destroyerSunk"] == true && $_SESSION["submarineSunk"] == true && $_SESSION["cruiserSunk"] == true)
+	if (isset($_SESSION["carrierSunk"]) && isset($_SESSION["battleshipSunk"]) && isset($_SESSION["destroyerSunk"])&& isset($_SESSION["submarineSunk"])&& isset($_SESSION["cruiserSunk"]) && $_SESSION["carrierSunk"] == true && $_SESSION["battleshipSunk"] == true && $_SESSION["destroyerSunk"] == true && $_SESSION["submarineSunk"] == true && $_SESSION["cruiserSunk"] == true)
 	{ 
 	echo "<br><br>You won the game!";
+	session_unset();
 	session_destroy();
 	}
 	
