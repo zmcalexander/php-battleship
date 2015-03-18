@@ -226,8 +226,6 @@ function declareVictory() {
 	if (isset($_SESSION["carrierSunk"]) && isset($_SESSION["battleshipSunk"]) && isset($_SESSION["destroyerSunk"])&& isset($_SESSION["submarineSunk"])&& isset($_SESSION["cruiserSunk"]) && $_SESSION["carrierSunk"] == true && $_SESSION["battleshipSunk"] == true && $_SESSION["destroyerSunk"] == true && $_SESSION["submarineSunk"] == true && $_SESSION["cruiserSunk"] == true)
 	{ 
 	echo "<br><br>You won the game!";
-	session_unset();
-	session_destroy();
 	}
 	
 	
