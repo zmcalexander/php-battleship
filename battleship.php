@@ -47,6 +47,7 @@ if (isset($_SESSION["userMoves"])) {
 }
 
 var_dump($userMoves);
+
 /*
 if (isset($_SESSION["carrierSunk"]) && $_SESSION["carrierSunk"] == true) {
 	echo "You sunk the Carrier!";
@@ -107,7 +108,14 @@ $matrix[$move] = " X ";
 
 array_push($_SESSION["userMoves"], $_GET["move"]);
 
-
+foreach ($userMoves as $userMove) {
+	$matrix[$userMove] = " X ";
+	
+}
+if (array_search($_GET["move"], $userMoves) != false) {
+	$matrix[$_GET["move"]] = " X ";
+	
+}
 
 processMove();
 evaluateMove();
